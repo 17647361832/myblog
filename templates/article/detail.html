@@ -1,0 +1,38 @@
+<!-- extends表明此页面继承自 base.html 文件 -->
+{% extends "base.html" %}
+{% load staticfiles %}
+<!-- 写入 base.html 中定义的 title -->
+{% block title %}
+    文章详情
+{% endblock title %}
+<!-- 写入 base.html 中定义的 content -->
+{% block content %}
+<!-- 文章详情 -->
+    <div class="container">
+        <div class="row">
+            <h1 class="col-12 mt-4">{{ article.title }}</h1>
+            <div class="col-12 alert alert-success">作者： {{ article.author }}</div>
+            .<a href="#" onclick="confirm_delete()">删除文章</a>
+            .<a href="{% url "article:article_update" article.id %}">编辑文章</a>
+            <div class="col-12">
+                <p>{{ article.body|safe }}</p>
+            </div>
+        </div>
+    </div>
+    <script>
+        //删除文章的函数
+        function confirm_delete() {
+        layer.open({
+            //窗口标题
+            title: "确认删除？",
+            //正文
+            content: "确认删除这篇文章吗?",
+            //点击确定按钮后调用回调函数
+            yes: function (index, layero) {
+                location.href='{% url "article:article_delete" article.id %}'
+            }
+
+        })
+    }
+    </script>
+{% endblock content %}
