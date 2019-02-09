@@ -1,4 +1,6 @@
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 
@@ -61,3 +63,14 @@ def user_register(request):
     else:
         return HttpResponse("请使用GET或POST请求数据")
 
+
+@login_required(login_url='/userprofile/login')
+def user_delete(request, id):
+    user = User.objects.get(id=id)
+    if request.user == user:
+        logout(request)
+        user.delete()
+        return redirect('article:article_list')
+
+    else:
+        return HttpResponse("您没有删除的权限")
