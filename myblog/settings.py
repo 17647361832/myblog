@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'article',
     'userprofile',
+    'password_reset',
 ]
 
 MIDDLEWARE = [
@@ -127,3 +128,22 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, "static"),
 )
+
+
+
+# SMTP服务器
+EMAIL_HOST = 'smtp.qq.com'
+# 邮箱名
+EMAIL_HOST_USER = '1376797811@qq.com'
+# 邮箱密码
+EMAIL_HOST_PASSWORD = 'lodfhxkwjnjwiiaa'
+# 发送邮件的端口
+EMAIL_PORT = 25
+# 是否使用 TLS
+EMAIL_USE_TLS = True
+# 默认的发件人
+DEFAULT_FROM_EMAIL = 'wei.guo <1376797811@qq.com>'
+
+# MEDIA_ROOT和MEDIA_URL是用户上传文件保存、访问的位置
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')

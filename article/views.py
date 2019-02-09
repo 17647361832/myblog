@@ -1,4 +1,5 @@
 import markdown
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 
 # Create your views here.
@@ -38,6 +39,8 @@ from django.http import HttpResponse
 from .forms import ArticlePostForm
 from django.contrib.auth.models import User
 
+# 检查登陆
+@login_required(login_url='/userprofile/login')
 def article_create(request):
     # 判断用户是否提交数据
     if request.method == "POST":
@@ -45,7 +48,7 @@ def article_create(request):
         article_post_form = ArticlePostForm(data=request.POST)
         if article_post_form.is_valid():
             new_article = article_post_form.save(commit=False)
-            new_article.author = User.objects.get(id=1)
+            new_article.author = User.objects.get(id=request.user.id)
             new_article.save()
             return redirect('article:article_list')
         else:
@@ -56,11 +59,15 @@ def article_create(request):
         context = {'article_post_form': article_post_form}
         return render(request, 'article/create.html', context)
 
+# 检查登陆
+@login_required(login_url='/userprofile/login')
 def article_delete(request, id):
     article = ArticlePost.objects.get(id=id)
     article.delete()
     return redirect('article:article_list')
 
+# 检查登陆
+@login_required(login_url='/userprofile/login')
 def article_update(request, id):
     # 获取文章对象
     article = ArticlePost.objects.get(id=id)
