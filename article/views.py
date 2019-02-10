@@ -1,5 +1,6 @@
 import markdown
 from django.contrib.auth.decorators import login_required
+from django.core.paginator import Paginator
 from django.shortcuts import render
 
 # Create your views here.
@@ -10,18 +11,27 @@ from .models import ArticlePost
 
 # 文章列表函数
 def article_list(request):
-    # 取出所有博客文章
-    articles = ArticlePost.objects.all()
-    # 需要传递给模板对象
-    context = {'articles': articles}
-    # render函数载入模板，并返回context对象
+    # 根据GET请求中查询条件
+    # 返回不同排序的对象数组
+    if request.GET.get('order') == 'total_views':
+        article_list = ArticlePost.objects.all().order_by('-total_views')
+        order = 'total_views'
+    else:
+        article_list = ArticlePost.objects.all()
+        order = 'normal'
+    paginator = Paginator(article_list, 3)
+    page = request.GET.get('page')
+    articles = paginator.get_page(page)
+    # 修改此行
+    context = {'articles': articles, 'order': order}
     return render(request, 'article/list.html', context)
-    # article/list.html：模板位置          context：传入模板的对象
 
 
 # 文章详情
 def article_detail(request, id):
     article = ArticlePost.objects.get(id=id)
+    article.total_views += 1
+    article.save(update_fields=['total_views'])
     article.body = markdown.markdown(article.body,
                                      extensions=[
                                          # 包含 缩写、表格等常用扩展
