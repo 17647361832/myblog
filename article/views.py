@@ -7,23 +7,39 @@ from django.shortcuts import render
 
 from django.http import HttpResponse
 from .models import ArticlePost
-
+from django.db.models import Q
 
 # 文章列表函数
 def article_list(request):
+    search = request.GET.get('search')
+    order = request.GET.get('order')
+    # 用户搜索逻辑，请求中有search，则走次逻辑
+    if search:
+        if order == 'total_views':
+        # 用q对象进行联合搜索
+            article_list = ArticlePost.objects.filter(
+                Q(title__contains=search)|  # icontains不区分分大小写，contains区分大小写
+                Q(body__icontains=search)
+            ).order_by('-total_views')
+
+        else:
+            article_list = ArticlePost.objects.filter(
+                Q(title__contains=search) |
+                Q(body__icontains=search)
+            )
     # 根据GET请求中查询条件
     # 返回不同排序的对象数组
-    if request.GET.get('order') == 'total_views':
-        article_list = ArticlePost.objects.all().order_by('-total_views')
-        order = 'total_views'
     else:
-        article_list = ArticlePost.objects.all()
-        order = 'normal'
+        search = ''
+        if order == 'total_views':
+            article_list = ArticlePost.objects.all().order_by('-total_views')
+        else:
+            article_list = ArticlePost.objects.all()
     paginator = Paginator(article_list, 3)
     page = request.GET.get('page')
     articles = paginator.get_page(page)
     # 修改此行
-    context = {'articles': articles, 'order': order}
+    context = {'articles': articles, 'order': order, 'search': search}
     return render(request, 'article/list.html', context)
 
 

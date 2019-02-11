@@ -23,6 +23,32 @@
             </li>
         </ol>
         </nav>
+        <div class="row">
+            <div class="col-auto mr-auto">
+                <form class="form-inline">
+                    <label class="sr-only">
+                        content
+                    </label>
+                    <input type="text"
+                           class="form-control"
+                            name="search"
+                            placeholder="搜索文章..."
+                            required>
+                </form>
+            </div>
+        </div>
+        {# 搜索提示语 #}
+        {% if search %}
+            <h4>
+                <span style="color: red">{{ search }}</span>
+                的搜索内容如下
+            </h4>
+            <hr>
+            {% else %}
+                <h4>暂无<span style="color: red">{{ search }}</span> </h4>
+                有关的文章
+            <hr>
+        {% endif %}
         <div class="row mt-2">
             {% for article in articles %}
             <!-- 文章内容 -->
@@ -55,11 +81,11 @@
         <span class="step-links">
             <!-- 如果不是第一页，则显示上翻按钮 -->
             {% if articles.has_previous %}
-                <a href="?page=1" class="btn btn-success">
+                <a href="?page=1&order={{ order }}&search={{ search }}" class="btn btn-success">
                     &laquo; 1
                 </a>
                 <span>...</span>
-                <a href="?page={{ articles.previous_page_number }}"
+                <a href="?page={{ articles.previous_page_number }}&order={{ order }}&search={{ search }}"
                    class="btn btn-secondary"
                 >
                     {{ articles.previous_page_number }}
@@ -71,13 +97,13 @@
             </span>
             <!-- 如果不是最末页，则显示下翻按钮 -->
             {% if articles.has_next %}
-                <a href="?page={{ articles.next_page_number }}"
+                <a href="?page={{ articles.next_page_number }}&order={{ order }}&search={{ search }}"
                    class="btn btn-secondary"
                 >
                     {{ articles.next_page_number }}
                 </a>
                 <span>...</span>
-                <a href="?page={{ articles.paginator.num_pages }}"
+                <a href="?page={{ articles.paginator.num_pages }}&order={{ order }}&search={{ search }}"
                    class="btn btn-success"
                 >
                     {{ articles.paginator.num_pages }} &raquo;
