@@ -5,6 +5,7 @@ from django.db import models
 # 导入内建的User模型
 from django.contrib.auth.models import User
 from django.utils import timezone
+from django.urls import reverse
 
 # 博客文章数据模型
 class ArticlePost(models.Model):
@@ -39,3 +40,6 @@ class ArticlePost(models.Model):
     # __str__方法定义了需要表示数据时应该显示的名称。给模型增加
     # __str__方法是很重要的，它最常见的就是在Django管理后台中做为对象的显示值。因此应该
     # 总是返回一个友好易读的字符串。后面会看到它的好处。
+
+    def get_absolute_url(self):
+        return reverse('article:article_detail', args=[self.id])

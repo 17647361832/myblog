@@ -1,3 +1,4 @@
+from markdown import markdown
 import markdown
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
@@ -6,6 +7,8 @@ from django.shortcuts import render
 # Create your views here.
 
 from django.http import HttpResponse
+
+from comment.models import Comment
 from .models import ArticlePost
 from django.db.models import Q
 
@@ -46,17 +49,24 @@ def article_list(request):
 # 文章详情
 def article_detail(request, id):
     article = ArticlePost.objects.get(id=id)
+    # 取出对应文章的评论
+    comments = Comment.objects.filter(article=id)
+
     article.total_views += 1
     article.save(update_fields=['total_views'])
-    article.body = markdown.markdown(article.body,
-                                     extensions=[
-                                         # 包含 缩写、表格等常用扩展
-                                         'markdown.extensions.extra',
-                                         # 语法高亮扩展
-                                         'markdown.extensions.codehilite',
-                                     ])
-    context = {'article': article}
-    # 载入模板，并返回context对象
+    md = markdown.Markdown(
+        extensions=[
+            # 包含 缩写、表格等常用扩展
+            'markdown.extensions.extra',
+            # 语法高亮扩展
+            'markdown.extensions.codehilite',
+            # 目录扩展
+            'markdown.extensions.toc',
+        ]
+    )
+    article.body = md.convert(article.body)
+    context = {'article': article, 'toc': md.toc, 'comments': comments}
+    # 载入模板，并返回context对象p
     return render(request, 'article/detail.html', context)
 
 from django.shortcuts import render, redirect
